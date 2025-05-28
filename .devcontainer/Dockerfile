@@ -1,13 +1,14 @@
 FROM mcr.microsoft.com/devcontainers/base:ubuntu
 
-# Variables
+# Variables de entorno
 ENV ANDROID_SDK_ROOT=/opt/android-sdk
 ENV FLUTTER_HOME=/opt/flutter
 ENV PATH=$FLUTTER_HOME/bin:$ANDROID_SDK_ROOT/cmdline-tools/latest/bin:$ANDROID_SDK_ROOT/platform-tools:$PATH
 
 # Instala dependencias del sistema
 RUN apt-get update && apt-get install -y \
-    curl unzip git xz-utils zip libglu1-mesa openjdk-17-jdk \
+    curl unzip git xz-utils zip libglu1-mesa openjdk-17-jdk ca-certificates-java \
+    && update-ca-certificates -f \
     && rm -rf /var/lib/apt/lists/*
 
 # Instala Flutter
@@ -29,5 +30,6 @@ USER vscode
 # Configura git y flutter + acepta licencias
 RUN git config --global --add safe.directory /opt/flutter && \
     flutter config --android-sdk $ANDROID_SDK_ROOT && \
+    flutter config --enable-web && \
     yes | sdkmanager --licenses && \
     sdkmanager "platform-tools" "platforms;android-33" "build-tools;33.0.2"
